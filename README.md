@@ -1,11 +1,10 @@
 # Climate Downscaling with a ResNet
 
-> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet, ported from the [Climate Change AI](https://www.climatechange.ai/tutorials) / ClimateLearn NeurIPS 2022 tutorial to the current `climate-learn` API.
+> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet.
 
 **Author:** Alex Adams.
 
 ---
-
 ## Overview
 
 Climate models output temperature and other variables on coarse grids, but regional decisions (agriculture, infrastructure, disaster preparedness) need finer detail. Spatial downscaling learns a mapping from a low-resolution grid to a high-resolution one for the same timestamp, without needing to expensively re-run a climate model at higher resolution.
@@ -14,14 +13,13 @@ This project trains a ResNet (bilinear-upsampled, then refined by 28 residual bl
 
 **Key outputs:**
 - A trained downscaling model with test RMSE 3.64K, Pearson correlation 0.989, mean bias -1.57K
-- Side-by-side visualizations of low-res input, high-res ground truth, model output, and bias
+- Side-by-side visualisations of low-res input, high-res ground truth, model output, and bias
 - A mean-bias map across the full test set
-
 ---
 
 ## Background & Motivation
 
-General Circulation Models (GCMs) produce coarse-resolution projections of future climate. Statistical downscaling — learning `high-res = f(low-res)` from historical reanalysis data — is a much cheaper way to get regionally actionable detail than re-running the underlying physical model at higher resolution. This project follows the approach from the [ClimateLearn tutorial](https://github.com/climatechange-ai-tutorials/climatelearn) (Bansal, Goel, Nguyen & Grover, NeurIPS 2022), which frames downscaling as an image super-resolution problem and applies CNN architectures to it.
+General Circulation Models (GCMs) produce coarse-resolution projections of future climate. Statistical downscaling — learning `high-res = f(low-res)` from historical reanalysis data — is a much cheaper way to get regionally actionable detail than re-running the underlying physical model at higher resolution. This project frames downscaling as an image super-resolution problem and applies CNN architectures to it.
 
 ---
 
@@ -38,14 +36,13 @@ General Circulation Models (GCMs) produce coarse-resolution projections of futur
 
 1. **Bilinear interpolation** — the low-res input is first upsampled to the target 64×128 resolution
 2. **ResNet backbone** (28 residual blocks, 128 hidden channels) — refines the bilinear upsample into the final prediction
-3. **Loss / optimization** — MSE training loss, AdamW (lr 1e-5), linear-warmup-cosine-annealing schedule — all the defaults `climate-learn` wires up automatically when loading the model via `architecture="resnet"` rather than building a bare `model="resnet"` (a bare ResNet has no upsampling step and shape-mismatches against the high-res target — this took some digging into the library source to find)
+3. **Loss/optimization** — MSE training loss, AdamW (lr 1e-5), linear-warmup-cosine-annealing schedule — all the defaults `climate-learn` wires up automatically when loading the model via `architecture="resnet"` rather than building a bare `model="resnet"` (a bare ResNet has no upsampling step and shape-mismatches against the high-res target — this took some digging into the library source to find)
 
 ### Key assumptions & limitations
 
 - **Small year range for feasible local training.** A single MPS (Apple Silicon GPU) forward+backward pass on this model takes ~10-25s/batch. The tutorial's original full range (1979-2018, 6-hourly) would take roughly a day *per epoch* on a laptop, so this run is restricted to train=1979, val=1980, test=1981-1982, with daily (not 6-hourly) subsampling. Results would likely improve with the full historical range and a GPU-equipped machine.
 - Single variable (2m temperature) — no multi-variable conditioning.
 - No uncertainty quantification on predictions.
-- The `climate-learn` package (now at [aditya-grover/climate-learn](https://github.com/aditya-grover/climate-learn)) has changed substantially since the 2022 tutorial was written — several APIs used in the original notebook (`download()`, `DataModule`, `load_model`, `set_climatology`, `climate_learn.training.Trainer`) no longer exist. This project's code reflects the current API, not the tutorial's original code.
 
 ---
 
@@ -55,7 +52,7 @@ General Circulation Models (GCMs) produce coarse-resolution projections of futur
 *Two test-set samples: low-resolution input, high-resolution ground truth, model output, and bias. The model's output recovers fine-grained structure (coastlines, gradients) that bilinear interpolation alone would not.*
 
 ![Mean bias across the test set](outputs/visualize_mean_bias.png)
-*Mean bias (predicted − ground truth) across the test set, mostly within ±5K with a few localized hotspots.*
+*Mean bias (predicted − ground truth) across the test set, mostly within ±5K with a few localised hotspots.*
 
 Test-set metrics: **RMSE 3.64K**, **Pearson correlation 0.989**, **mean bias -1.57K** — strong correlation with reasonable absolute error given the small training set and short training run (5 epochs).
 
@@ -79,7 +76,7 @@ python downscaling.py prepare              # download + convert ERA5/WeatherBenc
 python downscaling.py train                # train, checkpointing after every epoch
 python downscaling.py train --resume       # continue from the latest checkpoint
 python downscaling.py evaluate             # run test-set metrics on the latest checkpoint
-python downscaling.py visualize            # produce outputs/*.png from the latest checkpoint
+python downscaling.py visualise            # produce outputs/*.png from the latest checkpoint
 ```
 
 ### Requirements
@@ -88,21 +85,6 @@ python downscaling.py visualize            # produce outputs/*.png from the late
 - PyTorch, PyTorch Lightning, xarray, netCDF4, h5netcdf, matplotlib
 - [`climate-learn`](https://github.com/aditya-grover/climate-learn) (installed from GitHub, not yet stable on PyPI)
 - A GPU is not required — this was trained on a MacBook's Apple Silicon GPU (`accelerator="mps"`) — but a long unattended run is realistic given the per-batch timing above.
-
----
-
-## Project Structure
-
-```
-climate-downscaling-resnet/
-├── downscaling.py       # the whole pipeline: prepare / train / evaluate / visualize stages
-├── outputs/              # saved result plots
-├── requirements.txt
-├── LICENSE
-└── README.md
-```
-
-(`.climate_tutorial/` raw+processed data, `checkpoints/`, and `.venv/` are gitignored — regenerate them by running the stages above.)
 
 ---
 
