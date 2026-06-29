@@ -1,6 +1,9 @@
 # Climate Downscaling with a ResNet
 
-> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet.
+> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet, ported from the [Climate Change AI](https://www.climatechange.ai/tutorials) / ClimateLearn NeurIPS 2022 tutorial to the current `climate-learn` API.
+
+**Author:** Alex Adams.
+
 ---
 
 ## Overview
@@ -31,7 +34,7 @@ General Circulation Models (GCMs) produce coarse-resolution projections of futur
 | ERA5 2m temperature, 5.625° | [WeatherBench](https://github.com/pangeo-data/WeatherBench) | low-resolution input, 32×64 grid |
 | ERA5 2m temperature, 2.8125° | [WeatherBench](https://github.com/pangeo-data/WeatherBench) | high-resolution target, 64×128 grid |
 
-### Model structure
+### Approach
 
 1. **Bilinear interpolation** — the low-res input is first upsampled to the target 64×128 resolution
 2. **ResNet backbone** (28 residual blocks, 128 hidden channels) — refines the bilinear upsample into the final prediction
@@ -88,6 +91,20 @@ python downscaling.py visualize            # produce outputs/*.png from the late
 
 ---
 
+## Project Structure
+
+```
+climate-downscaling-resnet/
+├── downscaling.py       # the whole pipeline: prepare / train / evaluate / visualize stages
+├── outputs/              # saved result plots
+├── requirements.txt
+├── LICENSE
+└── README.md
+```
+
+(`.climate_tutorial/` raw+processed data, `checkpoints/`, and `.venv/` are gitignored — regenerate them by running the stages above.)
+
+---
 
 ## What I Learned
 
