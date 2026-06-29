@@ -2,8 +2,6 @@
 
 > A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet.
 
-**Author:** Alex Adams.
-
 ---
 ## Overview
 
