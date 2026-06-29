@@ -1,0 +1,8 @@
+torch
+pytorch-lightning
+xarray
+netCDF4
+h5netcdf
+dask
+matplotlib
+git+https://github.com/aditya-grover/climate-learn.git
