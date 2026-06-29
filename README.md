@@ -1,7 +1,6 @@
 # Climate Downscaling with a ResNet
 
-> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet, ported from the [Climate Change AI](https://www.climatechange.ai/tutorials) / ClimateLearn NeurIPS 2022 tutorial to the current `climate-learn` API.
-
+> A deep-learning pipeline that downscales ERA5 2m temperature from 5.625° to 2.8125° resolution using a ResNet.
 ---
 
 ## Overview
@@ -89,20 +88,6 @@ python downscaling.py visualize            # produce outputs/*.png from the late
 
 ---
 
-## Project Structure
-
-```
-climate-downscaling-resnet/
-├── downscaling.py       # the whole pipeline: prepare / train / evaluate / visualize stages
-├── outputs/              # saved result plots
-├── requirements.txt
-├── LICENSE
-└── README.md
-```
-
-(`.climate_tutorial/` raw+processed data, `checkpoints/`, and `.venv/` are gitignored — regenerate them by running the stages above.)
-
----
 
 ## What I Learned
 
