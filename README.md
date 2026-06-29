@@ -101,5 +101,3 @@ The other big lesson was about compute budgeting on a laptop: an early run silen
 - [aditya-grover/climate-learn](https://github.com/aditya-grover/climate-learn) — the current `climate-learn` package source
 
 ---
-
-*Alex Adams · [alex.adxms@icloud.com](mailto:alex.adxms@icloud.com) · [LinkedIn](https://www.linkedin.com/in/alex-adxms/)*
